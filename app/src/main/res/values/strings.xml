@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">omdbSearchClient</string>
+    <string name="search_button">Search</string>
+    <string name="search_hint">Search by movie title</string>
+    <string name="search_type">movie</string>
+    <string name="default_poster">http://www.imdb.com/images/nopicture/medium/film.png</string>
+    <string name="snackbar_title_not_found">The movie title you entered was not found</string>
+    <string name="snackbar_title_empty">Please enter a movie title</string>
+    <string name="network_not_available">Network not available! Please connect to the Internet.</string>
+    <string name="title">Title</string>
+    <string name="example_title">Wreck-It Ralph</string>
+    <string name="released">Released</string>
+    <string name="example_release">02 Nov 2012</string>
+    <string name="runtime">Runtime</string>
+    <string name="example_runtime">101 min</string>
+    <string name="director">Director</string>
+    <string name="example_director">Rich Moore</string>
+    <string name="Genre">Genre</string>
+    <string name="example_genre">Animation, Adventure, Comedy</string>
+    <string name="Writer">Writer(s)</string>
+    <string name="example_writer">Rich Moore (story), Phil Johnston (story), Jim Reardon (story), Phil Johnston (screenplay), Jennifer Lee (screenplay), John C. Reilly (additional story material)</string>
+    <string name="actors">Actors</string>
+    <string name="example_actors">John C. Reilly, Sarah Silverman, Jack McBrayer, Jane Lynch</string>
+    <string name="plot">Plot</string>
+    <string name="example_full_plot">"Wreck-It Ralph longs to be as beloved as his game's perfect Good Guy, Fix-It Felix. Problem is, nobody loves a Bad Guy. But they do love heroes... so when a modern, first-person shooter game arrives featuring tough-as-nails Sergeant Calhoun, Ralph sees it as his ticket to heroism and happiness. He sneaks into the game with a simple plan -- win a medal -- but soon wrecks everything, and accidentally unleashes a deadly enemy that threatens every game in the arcade. Ralph's only hope? Vanellope von Schweetz, a young troublemaking \"glitch\" from a candy-coated cart racing game who might just be the one to teach Ralph what it means to be a Good Guy. But will he realize he is good enough to become a hero before it's \"Game Over\" for the entire arcade?"</string>
+</resources>

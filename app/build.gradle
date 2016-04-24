@@ -1,0 +1,41 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        applicationId "info.santhosh.omdbsearchclient"
+        minSdkVersion 16
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+ext{
+    //version numbers
+    junitVersion = '4.12'
+    supportLibVersion = '23.3.0'
+    retroFitVersion= '2.0.2'
+    glideVersion='3.7.0'
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile "junit:junit:${junitVersion}"
+    compile "com.android.support:appcompat-v7:${supportLibVersion}"
+    compile "com.android.support:recyclerview-v7:${supportLibVersion}"
+    compile "com.android.support:gridlayout-v7:${supportLibVersion}"
+    compile "com.android.support:cardview-v7:${supportLibVersion}"
+    compile "com.android.support:design:${supportLibVersion}"
+    compile "com.squareup.retrofit2:retrofit:${retroFitVersion}"
+    compile "com.squareup.retrofit2:converter-gson:${retroFitVersion}"
+    compile "com.github.bumptech.glide:glide:${glideVersion}"
+}

@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="activity_horizontal_margin">64dp</dimen>
+    <integer name="grid_column_count">4</integer>
+</resources>
