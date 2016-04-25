@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         // Always call the superclass so it can restore the view hierarchy
         super.onRestoreInstanceState(savedInstanceState);
         mSearchResult = savedInstanceState.getParcelable("mSearchResult");
-        if(mSearchResult.Search.size() > 0) {
+        if((mSearchResult != null) && (mSearchResult.Search.size() > 0)) {
             mMovieList.addAll(mSearchResult.Search);
             mMovieAdapter.notifyDataSetChanged();
         }
