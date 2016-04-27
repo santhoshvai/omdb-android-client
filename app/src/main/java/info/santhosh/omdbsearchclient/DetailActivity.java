@@ -3,7 +3,6 @@ package info.santhosh.omdbsearchclient;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,17 +36,7 @@ public class DetailActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.grid_released)).setText(detail.Released);
         ((TextView) findViewById(R.id.grid_plot)).setText(detail.Plot);
         ((TextView) findViewById(R.id.grid_runtime)).setText(detail.Runtime);
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                // Reverses the Activity Scene entry Transition and triggers the calling Activity to reverse its exit Transition
-                supportFinishAfterTransition();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
+    
 }
