@@ -1,10 +1,11 @@
 package info.santhosh.omdbsearchclient;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -21,24 +22,25 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import info.santhosh.omdbsearchclient.Utils.CommonUtils;
+import info.santhosh.omdbsearchclient.omdbApiRetrofitService.RetrofitLoader;
 import info.santhosh.omdbsearchclient.omdbApiRetrofitService.searchService;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<searchService.ResultWithDetail>{
+
 
     private Button mSearchButton;
     private EditText mSearchEditText;
     private RecyclerView mMovieListRecyclerView;
     private MovieRecyclerViewAdapter mMovieAdapter;
-    private searchService.Result mSearchResult;
-    private List<searchService.Movie> mMovieList = new ArrayList<>();
-    private Map<String, searchService.Detail> mMovieDetailMap = new HashMap<>();
+    private String mMovieTitle;
+
+    private static final int LOADER_ID = 1;
+
+    private static final String LOG_TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 startSearch();
             }
         });
-        mMovieAdapter = new MovieRecyclerViewAdapter(mMovieList);
+        mMovieAdapter = new MovieRecyclerViewAdapter(null);
         mMovieListRecyclerView.setAdapter(mMovieAdapter);
         // First param is number of columns and second param is orientation i.e Vertical or Horizontal
         StaggeredGridLayoutManager gridLayoutManager =
@@ -79,54 +81,50 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable("mSearchResult", mSearchResult);
+        outState.putString("mMovieTitle", mMovieTitle);
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         // Always call the superclass so it can restore the view hierarchy
         super.onRestoreInstanceState(savedInstanceState);
-        mSearchResult = savedInstanceState.getParcelable("mSearchResult");
-        if((mSearchResult != null) && (mSearchResult.Search.size() > 0)) {
-            mMovieList.addAll(mSearchResult.Search);
-            mMovieAdapter.notifyDataSetChanged();
+        // init the loader, so that the onLoadFinished is called
+        mMovieTitle = savedInstanceState.getString("mMovieTitle");
+        if (mMovieTitle != null) {
+            Bundle args = new Bundle();
+            args.putString("movieTitle", mMovieTitle);
+            getSupportLoaderManager().initLoader(LOADER_ID, args, this);
         }
     }
 
-    private class searchByMovieTitle extends AsyncTask<String, Void, searchService.Result> {
-        private final String LOG_TAG = searchByMovieTitle.class.getSimpleName();
+    @Override
+    public Loader<searchService.ResultWithDetail> onCreateLoader(int id, Bundle args) {
+        Log.d(LOG_TAG, "onCreateLoader");
+        return new RetrofitLoader(MainActivity.this, args.getString("movieTitle"));
+    }
 
-        @Override
-        protected searchService.Result doInBackground(String... params) {
-            try {
-                return searchService.performSearch(params[0].trim());
-            } catch(final IOException e) {
-                Log.e(LOG_TAG, "Error from api access", e);
-            }
-            return null;
+    @Override
+    public void onLoadFinished(Loader<searchService.ResultWithDetail> loader, searchService.ResultWithDetail resultWithDetail) {
+        Log.d(LOG_TAG, "onLoadFinished");
+        if(resultWithDetail.getResponse().equals("True")) {
+            mMovieAdapter.swapData(resultWithDetail.getMovieDetailList());
+        } else {
+            Snackbar.make(mMovieListRecyclerView,
+                    getResources().getString(R.string.snackbar_title_not_found), Snackbar.LENGTH_LONG).show();
         }
+    }
 
-        @Override
-        protected void onPostExecute(searchService.Result searchResult) {
-            mMovieList.clear();
-            mMovieDetailMap.clear();
-            if(searchResult.Response.equals("True")) {
-                mSearchResult = searchResult;
-                mMovieList.addAll(searchResult.Search);
-            } else {
-                Snackbar.make(mMovieListRecyclerView,
-                        getResources().getString(R.string.snackbar_title_not_found), Snackbar.LENGTH_LONG).show();
-            }
-            mMovieAdapter.notifyDataSetChanged();
-        }
-
+    @Override
+    public void onLoaderReset(Loader<searchService.ResultWithDetail> loader) {
+        Log.d(LOG_TAG, "onLoaderReset");
+        mMovieAdapter.swapData(null);
     }
 
     public class MovieRecyclerViewAdapter
             extends RecyclerView.Adapter<MovieRecyclerViewAdapter.ViewHolder> {
 
-        private List<searchService.Movie> mValues;
+        private List<searchService.Detail> mValues;
 
-        public MovieRecyclerViewAdapter(List<searchService.Movie> items) {
+        public MovieRecyclerViewAdapter(List<searchService.Detail> items) {
             mValues = items;
         }
 
@@ -141,38 +139,18 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-            final String Title = mValues.get(position).Title;
-            final String imdbId = mValues.get(position).imdbID;
-            if(! mMovieDetailMap.containsKey(Title)) {
-                /* Anonymous async-task to request movie detail */
-                new AsyncTask<String, Void, searchService.Detail>() {
-                    @Override
-                    protected searchService.Detail doInBackground(final String... params ) {
-                        try {
-                            return searchService.getDetail(params[0].trim());
-                        } catch(final IOException e) {
-                            Log.e("onBindViewHolder", "Error from api access", e);
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(final searchService.Detail detail) {
-                        mMovieDetailMap.put(Title, detail);
-                        holder.mDirectorView.setText(detail.Director);
-                    }
-                }.execute(imdbId);
-            } else {
-                // Detail of the movie was already fetched
-                holder.mDirectorView.setText(mMovieDetailMap.get(Title).Director);
-            }
-
-            holder.mTitleView.setText(Title);
-            holder.mYearView.setText(mValues.get(position).Year);
+            final searchService.Detail detail = mValues.get(position);
+            final String title = detail.Title;
+            final String imdbId = detail.imdbID;
+            final String director = detail.Director;
+            final String year = detail.Year;
+            holder.mDirectorView.setText(director);
+            holder.mTitleView.setText(title);
+            holder.mYearView.setText(year);
 
             final String imageUrl;
-            if (! mValues.get(position).Poster.equals("N/A")) {
-                imageUrl = mValues.get(position).Poster;
+            if (! detail.Poster.equals("N/A")) {
+                imageUrl = detail.Poster;
             } else {
                 // default image if there is no poster available
                 imageUrl = getResources().getString(R.string.default_poster);
@@ -185,9 +163,8 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent(MainActivity.this, DetailActivity.class);
                     // Pass data object in the bundle and populate details activity.
+                    intent.putExtra(DetailActivity.MOVIE_DETAIL, detail);
                     intent.putExtra(DetailActivity.IMAGE_URL, imageUrl);
-                    intent.putExtra(DetailActivity.MOVIE_TITLE, Title);
-                    intent.putExtra(DetailActivity.MOVIE_IMDB, imdbId);
 
                     ActivityOptionsCompat options = ActivityOptionsCompat.
                             makeSceneTransitionAnimation(MainActivity.this,
@@ -199,6 +176,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
+            if(mValues == null) {
+                return 0;
+            }
             return mValues.size();
         }
 
@@ -225,14 +205,30 @@ public class MainActivity extends AppCompatActivity {
             super.onViewRecycled(holder);
             Glide.clear(holder.mThumbImageView);
         }
+
+        public void swapData(List<searchService.Detail> items) {
+            if(items != null) {
+                if(mValues != items) {
+                    Log.d(LOG_TAG, "notifyDataSetChanged");
+                    mValues = items;
+                    notifyDataSetChanged();
+                }
+            } else {
+                mValues = null;
+            }
+        }
     }
 
     private void startSearch() {
         if(CommonUtils.isNetworkAvailable(getApplicationContext())) {
             CommonUtils.hideSoftKeyboard(MainActivity.this);
-            String movieTitle = mSearchEditText.getText().toString();
-            if (!movieTitle.isEmpty())
-                new searchByMovieTitle().execute(movieTitle);
+            String movieTitle = mSearchEditText.getText().toString().trim();
+            if (!movieTitle.isEmpty()) {
+                Bundle args = new Bundle();
+                args.putString("movieTitle", movieTitle);
+                getSupportLoaderManager().restartLoader(LOADER_ID, args, this);
+                mMovieTitle = movieTitle;
+            }
             else
                 Snackbar.make(mMovieListRecyclerView,
                         getResources().getString(R.string.snackbar_title_empty),

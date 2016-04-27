@@ -10,7 +10,7 @@
         android:id="@+id/main.appbar"
         android:fitsSystemWindows="true"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="@dimen/app_bar_height"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/main_collapsing"
@@ -28,7 +28,7 @@
                 app:layout_collapseMode="parallax" />
             <View
                 android:layout_width="match_parent"
-                android:layout_height="88dp"
+                android:layout_height="@dimen/text_protection_scrim_height"
                 android:layout_gravity="bottom"
                 android:layout_alignBottom="@+id/main_backdrop"
                 android:background="@drawable/photo_background_protection"/>

@@ -20,10 +20,38 @@ public class searchService {
     private static final String API_URL = "http://www.omdbapi.com";
     private static Omdbapi sOmdbApi;
 
-    public static class Result implements Parcelable {
+    public static class ResultWithDetail {
+        private List<Detail> movieDetailList;
+        private String totalResults;
+        private String Response;
+
+        public ResultWithDetail(Result result) {
+            this.totalResults = result.totalResults;
+            this.Response = result.Response;
+            movieDetailList = new ArrayList<>();
+        }
+
+        public void addToList(Detail detail) {
+            movieDetailList.add(detail);
+        }
+
+        public List<Detail> getMovieDetailList() {
+            return movieDetailList;
+        }
+
+        public String getTotalResults() {
+            return totalResults;
+        }
+
+        public String getResponse() {
+            return Response;
+        }
+    }
+
+    public static class Result {
         public List<Movie> Search;
-        public final String totalResults;
-        public final String Response;
+        public String totalResults;
+        public String Response;
 
         @Override
         public String toString() {
@@ -34,50 +62,9 @@ public class searchService {
                     '}';
         }
 
-        /* boiler-plate code for making the class parcelable */
-        protected Result(Parcel in) {
-            if (in.readByte() == 0x01) {
-                Search = new ArrayList<Movie>();
-                in.readList(Search, Movie.class.getClassLoader());
-            } else {
-                Search = null;
-            }
-            totalResults = in.readString();
-            Response = in.readString();
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            if (Search == null) {
-                dest.writeByte((byte) (0x00));
-            } else {
-                dest.writeByte((byte) (0x01));
-                dest.writeList(Search);
-            }
-            dest.writeString(totalResults);
-            dest.writeString(Response);
-        }
-
-        @SuppressWarnings("unused")
-        public static final Parcelable.Creator<Result> CREATOR = new Parcelable.Creator<Result>() {
-            @Override
-            public Result createFromParcel(Parcel in) {
-                return new Result(in);
-            }
-
-            @Override
-            public Result[] newArray(int size) {
-                return new Result[size];
-            }
-        };
     }
 
-    public static class Movie implements Parcelable {
+    public static class Movie  {
         public String Title;
         public String Year;
         public String imdbID;
@@ -95,44 +82,9 @@ public class searchService {
                     '}';
         }
 
-       /* boiler-plate code for making the class parcelable */
-        protected Movie(Parcel in) {
-            Title = in.readString();
-            Year = in.readString();
-            imdbID = in.readString();
-            Type = in.readString();
-            Poster = in.readString();
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(Title);
-            dest.writeString(Year);
-            dest.writeString(imdbID);
-            dest.writeString(Type);
-            dest.writeString(Poster);
-        }
-
-        @SuppressWarnings("unused")
-        public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
-            @Override
-            public Movie createFromParcel(Parcel in) {
-                return new Movie(in);
-            }
-
-            @Override
-            public Movie[] newArray(int size) {
-                return new Movie[size];
-            }
-        };
     }
 
-    public static class Detail {
+    public static class Detail implements Parcelable{
         public String Title;
         public String Year;
         public String Rated;
@@ -179,6 +131,73 @@ public class searchService {
                     ", Response='" + Response + '\'' +
                     '}';
         }
+
+        /* Boilerplate code to make the object parcelable */
+
+        protected Detail(Parcel in) {
+            Title = in.readString();
+            Year = in.readString();
+            Rated = in.readString();
+            Released = in.readString();
+            Runtime = in.readString();
+            Genre = in.readString();
+            Director = in.readString();
+            Writer = in.readString();
+            Actors = in.readString();
+            Plot = in.readString();
+            Language = in.readString();
+            Country = in.readString();
+            Awards = in.readString();
+            Poster = in.readString();
+            Metascore = in.readString();
+            imdbRating = in.readString();
+            imdbVotes = in.readString();
+            imdbID = in.readString();
+            Type = in.readString();
+            Response = in.readString();
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(Title);
+            dest.writeString(Year);
+            dest.writeString(Rated);
+            dest.writeString(Released);
+            dest.writeString(Runtime);
+            dest.writeString(Genre);
+            dest.writeString(Director);
+            dest.writeString(Writer);
+            dest.writeString(Actors);
+            dest.writeString(Plot);
+            dest.writeString(Language);
+            dest.writeString(Country);
+            dest.writeString(Awards);
+            dest.writeString(Poster);
+            dest.writeString(Metascore);
+            dest.writeString(imdbRating);
+            dest.writeString(imdbVotes);
+            dest.writeString(imdbID);
+            dest.writeString(Type);
+            dest.writeString(Response);
+        }
+
+        @SuppressWarnings("unused")
+        public static final Parcelable.Creator<Detail> CREATOR = new Parcelable.Creator<Detail>() {
+            @Override
+            public Detail createFromParcel(Parcel in) {
+                return new Detail(in);
+            }
+
+            @Override
+            public Detail[] newArray(int size) {
+                return new Detail[size];
+            }
+        };
     }
 
     public interface Omdbapi {
