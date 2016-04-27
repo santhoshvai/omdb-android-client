@@ -17,6 +17,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView mMovieListRecyclerView;
     private MovieRecyclerViewAdapter mMovieAdapter;
     private String mMovieTitle;
+    private ProgressBar mProgressBar;
 
     private static final int LOADER_ID = 1;
 
@@ -76,6 +78,7 @@ public class MainActivity extends AppCompatActivity
         // Attach the layout manager to the recycler view
         mMovieListRecyclerView.setLayoutManager(gridLayoutManager);
         getSupportLoaderManager().enableDebugLogging(true);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_spinner);
     }
 
     @Override
@@ -103,6 +106,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<searchService.ResultWithDetail> loader, searchService.ResultWithDetail resultWithDetail) {
+        mProgressBar.setVisibility(View.GONE);
+        mMovieListRecyclerView.setVisibility(View.VISIBLE);
         if(resultWithDetail.getResponse().equals("True")) {
             mMovieAdapter.swapData(resultWithDetail.getMovieDetailList());
         } else {
@@ -223,6 +228,8 @@ public class MainActivity extends AppCompatActivity
                 args.putString("movieTitle", movieTitle);
                 getSupportLoaderManager().restartLoader(LOADER_ID, args, this);
                 mMovieTitle = movieTitle;
+                mProgressBar.setVisibility(View.VISIBLE);
+                mMovieListRecyclerView.setVisibility(View.GONE);
             }
             else
                 Snackbar.make(mMovieListRecyclerView,
