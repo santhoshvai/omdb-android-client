@@ -38,5 +38,5 @@ public class DetailActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.grid_runtime)).setText(detail.Runtime);
 
     }
-    
+
 }

@@ -9,7 +9,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -153,7 +152,7 @@ public class MainActivity extends AppCompatActivity
                 // default image if there is no poster available
                 imageUrl = getResources().getString(R.string.default_poster);
             }
-
+            holder.mThumbImageView.layout(0, 0, 0, 0); // invalidate the width so that glide wont use that dimension
             Glide.with(MainActivity.this).load(imageUrl).into(holder.mThumbImageView);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
