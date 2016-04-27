@@ -55,4 +55,25 @@ public class RetrofitLoader extends AsyncTaskLoader<searchService.ResultWithDeta
         super.onReset();
         mData = null;
     }
+
+    @Override
+    public void deliverResult(searchService.ResultWithDetail data) {
+        if (isReset()) {
+            // The Loader has been reset; ignore the result and invalidate the data.
+            return;
+        }
+
+        // Hold a reference to the old data so it doesn't get garbage collected.
+        // We must protect it until the new data has been delivered.
+        searchService.ResultWithDetail oldData = mData;
+        mData = data;
+
+        if (isStarted()) {
+            Log.d(LOG_TAG, "isStarted");
+            // If the Loader is in a started state, deliver the results to the
+            // client. The superclass method does this for us.
+            super.deliverResult(data);
+        }
+
+    }
 }

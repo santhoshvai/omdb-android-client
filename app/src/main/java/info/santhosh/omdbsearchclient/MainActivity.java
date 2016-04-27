@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity
         mMovieListRecyclerView.setItemAnimator(null);
         // Attach the layout manager to the recycler view
         mMovieListRecyclerView.setLayoutManager(gridLayoutManager);
+        getSupportLoaderManager().enableDebugLogging(true);
     }
 
     @Override
@@ -208,11 +209,9 @@ public class MainActivity extends AppCompatActivity
 
         public void swapData(List<searchService.Detail> items) {
             if(items != null) {
-                if(mValues != items) {
-                    Log.d(LOG_TAG, "notifyDataSetChanged");
-                    mValues = items;
-                    notifyDataSetChanged();
-                }
+                mValues = items;
+                notifyDataSetChanged();
+
             } else {
                 mValues = null;
             }
