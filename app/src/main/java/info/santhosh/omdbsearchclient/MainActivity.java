@@ -99,13 +99,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public Loader<searchService.ResultWithDetail> onCreateLoader(int id, Bundle args) {
-        Log.d(LOG_TAG, "onCreateLoader");
         return new RetrofitLoader(MainActivity.this, args.getString("movieTitle"));
     }
 
     @Override
     public void onLoadFinished(Loader<searchService.ResultWithDetail> loader, searchService.ResultWithDetail resultWithDetail) {
-        Log.d(LOG_TAG, "onLoadFinished");
         if(resultWithDetail.getResponse().equals("True")) {
             mMovieAdapter.swapData(resultWithDetail.getMovieDetailList());
         } else {
@@ -116,7 +114,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoaderReset(Loader<searchService.ResultWithDetail> loader) {
-        Log.d(LOG_TAG, "onLoaderReset");
         mMovieAdapter.swapData(null);
     }
 

@@ -24,13 +24,14 @@ public class RetrofitLoader extends AsyncTaskLoader<searchService.ResultWithDeta
 
     @Override
     public searchService.ResultWithDetail loadInBackground() {
-        Log.d(LOG_TAG, "loadInBackground");
         // get results from calling API
         try {
             searchService.Result result =  searchService.performSearch(mTitle);
             searchService.ResultWithDetail resultWithDetail = new searchService.ResultWithDetail(result);
-            for(searchService.Movie movie: result.Search) {
-                resultWithDetail.addToList(searchService.getDetail(movie.imdbID));
+            if(result.Search != null) {
+                for(searchService.Movie movie: result.Search) {
+                    resultWithDetail.addToList(searchService.getDetail(movie.imdbID));
+                }
             }
             return  resultWithDetail;
         } catch(final IOException e) {
@@ -52,6 +53,7 @@ public class RetrofitLoader extends AsyncTaskLoader<searchService.ResultWithDeta
 
     @Override
     protected void onReset() {
+        Log.d(LOG_TAG, "onReset");
         super.onReset();
         mData = null;
     }
@@ -69,7 +71,6 @@ public class RetrofitLoader extends AsyncTaskLoader<searchService.ResultWithDeta
         mData = data;
 
         if (isStarted()) {
-            Log.d(LOG_TAG, "isStarted");
             // If the Loader is in a started state, deliver the results to the
             // client. The superclass method does this for us.
             super.deliverResult(data);
