@@ -85,11 +85,17 @@ public class MainActivity extends AppCompatActivity
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("mMovieTitle", mMovieTitle);
+        outState.putInt("progress_visibility",mProgressBar.getVisibility());
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         // Always call the superclass so it can restore the view hierarchy
         super.onRestoreInstanceState(savedInstanceState);
+        int progress_visibility= savedInstanceState.getInt("progress_visibility");
+        // if the progressBar was visible before orientation-change
+        if(progress_visibility == View.VISIBLE) {
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
         // init the loader, so that the onLoadFinished is called
         mMovieTitle = savedInstanceState.getString("mMovieTitle");
         if (mMovieTitle != null) {
@@ -241,4 +247,5 @@ public class MainActivity extends AppCompatActivity
                     Snackbar.LENGTH_LONG).show();
         }
     }
+
 }
