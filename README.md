@@ -4,7 +4,7 @@ An android client for [Open Movie Database (OMDb) API](http://omdbapi.com)
 
 ## Screen-record
 
-![screenRecord](http://i.imgur.com/ozqRf0B.gif)
+![screenRecord](http://i.imgur.com/42OGNQ0.gif)
 
 ## Functionality:
 
