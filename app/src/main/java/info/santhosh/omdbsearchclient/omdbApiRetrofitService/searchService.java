@@ -7,6 +7,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import info.santhosh.omdbsearchclient.BuildConfig;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -201,11 +207,11 @@ public class searchService {
     }
 
     public interface Omdbapi {
-        @GET("/?type=movie")
+        @GET("?type=movie")
         Call<Result> Result(
                 @Query("s") String Title);
 
-        @GET("/?plot=full")
+        @GET("?plot=full")
         Call<Detail> Detail(
                 @Query("i") String ImdbId);
     }
@@ -213,8 +219,29 @@ public class searchService {
     private static void setsOmdbApi() {
         if (sOmdbApi == null) {
             // Create a REST adapter which points the omdb API.
+            OkHttpClient.Builder httpClient =
+                    new OkHttpClient.Builder();
+            httpClient.addInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Request original = chain.request();
+                    HttpUrl originalHttpUrl = original.url();
+
+                    HttpUrl url = originalHttpUrl.newBuilder()
+                            .addQueryParameter("apikey", BuildConfig.API_KEY)
+                            .build();
+
+                    // Request customization: add request headers
+                    Request.Builder requestBuilder = original.newBuilder()
+                            .url(url);
+
+                    Request request = requestBuilder.build();
+                    return chain.proceed(request);
+                }
+            });
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(API_URL)
+                    .client(httpClient.build())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
